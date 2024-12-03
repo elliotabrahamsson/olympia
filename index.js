@@ -209,6 +209,11 @@ function addNewOlympiaInput() {
 }
 
 function addNewOlympia(newOlympia) {
+  if (!newOlympia || !newOlympia.name || !newOlympia.age) {
+    console.error("Olympia saknar namn eller ålder");
+    return;
+  }
+
   fetch("https://json-server-7x9n.onrender.com/MrOlympias", {
     method: "POST",
     headers: {
@@ -216,6 +221,12 @@ function addNewOlympia(newOlympia) {
     },
     body: JSON.stringify(newOlympia),
   })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("misslyckades att lägga till");
+      }
+      return response.json();
+    })
     .then((response) => response.json())
     .then((data) => {
       console.log("Ny Olympia har lagts till i MrOlympias", data);
