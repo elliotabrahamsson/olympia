@@ -182,28 +182,52 @@ function addNewOlympiaInput() {
   </form>
   </div>`;
 
-  document.getElementById("addOlympiaForm").addEventListener("submit", () => {
-    const imageFile = document.querySelector("#picture").files[0];
-    const reader = new FileReader();
+  document
+    .getElementById("addOlympiaForm")
+    .addEventListener("submit", (event) => {
+      event.preventDefault();
 
-    if (imageFile) {
-      reader.onloadend = function () {
-        const newOlympia = {
-          name: document.querySelector("#name").value,
-          age: document.querySelector("#age").value,
-          nationality: document.querySelector("#nationality").value,
-          Division: document.querySelector("#division").value,
-          Wins: document.querySelector("#wins").value,
-          Picture: reader.result,
+      const imageFile = document.querySelector("#picture").files[0];
+      const reader = new FileReader();
+
+      if (imageFile) {
+        reader.onloadend = function () {
+          const newOlympia = {
+            name: document.querySelector("#name").value,
+            age: document.querySelector("#age").value,
+            nationality: document.querySelector("#nationality").value,
+            Division: document.querySelector("#division").value,
+            Wins: document.querySelector("#wins").value,
+            Picture: reader.result,
+          };
+
+          fetch("http://localhost:3000/uploadImage", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              imageData: newOlympia.Picture,
+              imageName: newOlympia.name + "_" + Date.now(),
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("Bild uppladdad", data.imageUrl);
+              newOlympia.Picture = data.imageUrl;
+              addNewOlympia(newOlympia);
+            })
+            .catch((error) =>
+              console.error("Fel vid uppladdning av bild", error)
+            );
+
+          closeLargeInfoCard();
         };
-        addNewOlympia(newOlympia);
-        closeLargeInfoCard();
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      alert("vänligen välj en bild");
-    }
-  });
+        reader.readAsDataURL(imageFile);
+      } else {
+        alert("Vänligen välj en bild.");
+      }
+    });
 
   inputCard.style.display = "block";
 }
