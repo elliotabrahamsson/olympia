@@ -201,15 +201,12 @@ function addNewOlympiaInput() {
             Picture: reader.result,
           };
 
-          fetch("http://localhost:3000/uploadImage", {
+          fetch("https://json-server-7x9n.onrender.com/uploadImage", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "multpart/form-data",
             },
-            body: JSON.stringify({
-              imageData: newOlympia.Picture,
-              imageName: newOlympia.name + "_" + Date.now(),
-            }),
+            body: new FormData().append("image", imageFile),
           })
             .then((response) => response.json())
             .then((data) => {
