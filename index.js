@@ -1,4 +1,4 @@
-fetch("https://json-server-7x9n.onrender.com/MrOlympias")
+fetch("https://localhost:10000/MrOlympias")
   .then((response) => {
     if (!response.ok) {
       throw new Error("Kunde inte hämta från data.json" + response.statusText);
@@ -196,7 +196,7 @@ function addNewOlympiaInput() {
     const formData = new FormData();
     formData.append("picture", imageFile);
 
-    fetch("https://json-server-7x9n.onrender.com:10000/uploadImage", {
+    fetch("https://localhost:10000/uploadImage", {
       method: "POST",
       body: formData,
     })
@@ -233,7 +233,7 @@ function addNewOlympia(newOlympia) {
     return;
   }
 
-  fetch("https://json-server-7x9n.onrender.com/uploadImage", {
+  fetch("https://json-server-7x9n.onrender.com/MrOlympias", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
