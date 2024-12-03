@@ -1,4 +1,4 @@
-fetch("https://localhost:10000/MrOlympias")
+fetch("https://json-server-7x9n.onrender.com/MrOlympias")
   .then((response) => {
     if (!response.ok) {
       throw new Error("Kunde inte hämta från data.json" + response.statusText);
@@ -183,46 +183,62 @@ function addNewOlympiaInput() {
       </form>
     </div>`;
 
-  document.getElementById("addOlympiaForm").addEventListener("submit", (e) => {
-    e.preventDefault();
+  document
+    .getElementById("addOlympiaForm")
+    .addEventListener("submit", function () {
+      const fileInput = document.querySelector("#picture");
+      const imageFile = fileInput.files[0];
 
-    const imageFile = document.querySelector("#picture").files[0];
+      if (!imageFile) {
+        alert("Vänligen välj en bild.");
+        return;
+      }
 
-    if (!imageFile) {
-      alert("Vänligen välj en bild.");
-      return;
-    }
+      const reader = new FileReader();
+      reader.onloadend = function () {
+        const base64Image = reader.result; // Base64-strängen för bilden
 
-    const formData = new FormData();
-    formData.append("picture", imageFile);
-
-    fetch("https://localhost:10000/uploadImage", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => {
-        console.log(response);
-        return response.json();
-      })
-      .then((data) => {
-        console.log("Bild uppladdad", data.imageURL);
-
-        const newOlympia = {
+        // Skapa ett objekt som vi kan skicka till servern
+        const olympiaData = {
           name: document.querySelector("#name").value,
           age: document.querySelector("#age").value,
           nationality: document.querySelector("#nationality").value,
           division: document.querySelector("#division").value,
           wins: document.querySelector("#wins").value,
-          picture: data.imageURL,
+          picture: base64Image, // Skicka Base64-strängen istället för en vanlig fil
         };
 
-        addNewOlympia(newOlympia);
-        closeLargeInfoCard();
-      })
-      .catch((error) => {
-        console.error("Fel vid uppladdning av bild", error);
-      });
-  });
+        // Skicka Base64-strängen till servern
+        fetch("https://json-server-7x9n.onrender.com/uploadImage", {
+          // Ändra till rätt URL om du kör servern på annan plats
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(olympiaData), // Skicka data som JSON
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Bild uppladdad", data.imageUrl); // Visa URL:en från servern
+
+            // Lägg till Olympia i listan (lägg till din egen logik för att visa Olympia)
+            addNewOlympia({
+              name: olympiaData.name,
+              age: olympiaData.age,
+              nationality: olympiaData.nationality,
+              division: olympiaData.division,
+              wins: olympiaData.wins,
+              picture: data.imageUrl, // Använd URL som servern skickar tillbaka
+            });
+            closeLargeInfoCard(); // Stäng formuläret
+          })
+          .catch((error) => {
+            console.error("Fel vid uppladdning av bild", error);
+          });
+      };
+
+      reader.readAsDataURL(imageFile); // Läs filen som Base64
+    });
 
   inputCard.style.display = "block";
 }
