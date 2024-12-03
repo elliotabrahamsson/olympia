@@ -1,4 +1,4 @@
-fetch("http://localhost:3000/MrOlympias")
+fetch("https://your-json-server.onrender.com/olympias")
   .then((response) => {
     if (!response.ok) {
       throw new Error("Kunde inte hämta från data.json" + response.statusText);
