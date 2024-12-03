@@ -151,75 +151,74 @@ function addNewOlympiaInput() {
     document.body.appendChild(inputCard);
   }
 
-  inputCard.innerHTML = `<div class = "largeInfoCard-content">
-<span class = "close" onclick="closeLargeInfoCard()"> &times</span>
-  <form id="addOlympiaForm" class="form-stacked">
-   <div class="form-group">     
-      <label for="name">Namn:</label>
-      <input type="text" id="name" name="name" required>
-   </div>
-   <div class="form-group">  
-      <label for="age">Ålder:</label>
-      <input type="number" id="age" name="age" required>
-   </div>   
-   <div class="form-group">
-      <label for="nationality">Nationalitet:</label>
-      <input type="text" id="nationality" name="nationality" required>
-   </div>
-   <div class="form-group">   
-      <label for="division">Division:</label>
-      <input type="text" id="division" name="division" required>
-   </div>
-   <div class="form-group">   
-      <label for="wins">Vinster:</label>
-      <input type="number" id="wins" name="wins" required>
-   </div>
-   <div class="form-group">    
-      <label for="picture">Bild:</label>
-      <input type="file" id="picture" name="picture" accept="image/*" required>
-   </div>    
-      <button type="submit">Lägg till Olympia</button>
-  </form>
-  </div>`;
+  inputCard.innerHTML = `
+    <div class="largeInfoCard-content">
+      <span class="close" onclick="closeLargeInfoCard()"> &times</span>
+      <form id="addOlympiaForm" class="form-stacked">
+        <div class="form-group">     
+          <label for="name">Namn:</label>
+          <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">  
+          <label for="age">Ålder:</label>
+          <input type="number" id="age" name="age" required>
+        </div>   
+        <div class="form-group">
+          <label for="nationality">Nationalitet:</label>
+          <input type="text" id="nationality" name="nationality" required>
+        </div>
+        <div class="form-group">   
+          <label for="division">Division:</label>
+          <input type="text" id="division" name="division" required>
+        </div>
+        <div class="form-group">   
+          <label for="wins">Vinster:</label>
+          <input type="number" id="wins" name="wins" required>
+        </div>
+        <div class="form-group">    
+          <label for="picture">Bild:</label>
+          <input type="file" id="picture" name="picture" accept="image/*" required>
+        </div>    
+        <button type="submit">Lägg till Olympia</button>
+      </form>
+    </div>`;
 
-  document.getElementById("addOlympiaForm").addEventListener("submit", () => {
+  document.getElementById("addOlympiaForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+
     const imageFile = document.querySelector("#picture").files[0];
-    const reader = new FileReader();
 
-    if (imageFile) {
-      reader.onloadend = function () {
+    if (!imageFile) {
+      alert("Vänligen välj en bild.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("picture", imageFile);
+
+    fetch("https://json-server-7x9n.onrender.com/uploadImage", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log("Bild uppladdad", data.imageURL);
+
         const newOlympia = {
           name: document.querySelector("#name").value,
           age: document.querySelector("#age").value,
           nationality: document.querySelector("#nationality").value,
-          Division: document.querySelector("#division").value,
-          Wins: document.querySelector("#wins").value,
-          Picture: reader.result,
+          division: document.querySelector("#division").value,
+          wins: document.querySelector("#wins").value,
+          picture: data.imageURL,
         };
 
-        fetch("https://json-server-7x9n.onrender.com/uploadImage", {
-          method: "POST",
-          headers: {
-            "Content-Type": "multpart/form-data",
-          },
-          body: new FormData().append("image", imageFile),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Bild uppladdad", data.imageUrl);
-            newOlympia.Picture = data.imageUrl;
-            addNewOlympia(newOlympia);
-          })
-          .catch((error) =>
-            console.error("Fel vid uppladdning av bild", error)
-          );
-
+        addNewOlympia(newOlympia);
         closeLargeInfoCard();
-      };
-      reader.readAsDataURL(imageFile);
-    } else {
-      alert("Vänligen välj en bild.");
-    }
+      })
+      .catch((error) => {
+        console.error("Fel vid uppladdning av bild", error);
+      });
   });
 
   inputCard.style.display = "block";
