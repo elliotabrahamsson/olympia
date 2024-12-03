@@ -3,6 +3,19 @@ body {
   background: linear-gradient(310deg, rgb(0, 0, 0), rgb(71, 67, 67));
 }
 
+h1 {
+  color: white;
+}
+
+a {
+  color: white;
+  text-decoration: underline;
+}
+
+a:hover {
+  color: rgb(181, 181, 181);
+}
+
 #cards-container {
   display: flex;
   flex-wrap: wrap;
