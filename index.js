@@ -226,7 +226,7 @@ function addNewOlympia(newOlympia) {
 }
 
 function deleteOlympia(id, cardElement) {
-  fetch(`https://json-server-7x9n.onrender.com/MrOlympias${id}`, {
+  fetch(`https://json-server-7x9n.onrender.com/MrOlympias/${id}`, {
     method: "DELETE",
   })
     .then((response) => {
