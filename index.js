@@ -182,49 +182,45 @@ function addNewOlympiaInput() {
   </form>
   </div>`;
 
-  document
-    .getElementById("addOlympiaForm")
-    .addEventListener("submit", (event) => {
-      event.preventDefault();
+  document.getElementById("addOlympiaForm").addEventListener("submit", () => {
+    const imageFile = document.querySelector("#picture").files[0];
+    const reader = new FileReader();
 
-      const imageFile = document.querySelector("#picture").files[0];
-      const reader = new FileReader();
-
-      if (imageFile) {
-        reader.onloadend = function () {
-          const newOlympia = {
-            name: document.querySelector("#name").value,
-            age: document.querySelector("#age").value,
-            nationality: document.querySelector("#nationality").value,
-            Division: document.querySelector("#division").value,
-            Wins: document.querySelector("#wins").value,
-            Picture: reader.result,
-          };
-
-          fetch("https://json-server-7x9n.onrender.com/uploadImage", {
-            method: "POST",
-            headers: {
-              "Content-Type": "multpart/form-data",
-            },
-            body: new FormData().append("image", imageFile),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              console.log("Bild uppladdad", data.imageUrl);
-              newOlympia.Picture = data.imageUrl;
-              addNewOlympia(newOlympia);
-            })
-            .catch((error) =>
-              console.error("Fel vid uppladdning av bild", error)
-            );
-
-          closeLargeInfoCard();
+    if (imageFile) {
+      reader.onloadend = function () {
+        const newOlympia = {
+          name: document.querySelector("#name").value,
+          age: document.querySelector("#age").value,
+          nationality: document.querySelector("#nationality").value,
+          Division: document.querySelector("#division").value,
+          Wins: document.querySelector("#wins").value,
+          Picture: reader.result,
         };
-        reader.readAsDataURL(imageFile);
-      } else {
-        alert("Vänligen välj en bild.");
-      }
-    });
+
+        fetch("https://json-server-7x9n.onrender.com/uploadImage", {
+          method: "POST",
+          headers: {
+            "Content-Type": "multpart/form-data",
+          },
+          body: new FormData().append("image", imageFile),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Bild uppladdad", data.imageUrl);
+            newOlympia.Picture = data.imageUrl;
+            addNewOlympia(newOlympia);
+          })
+          .catch((error) =>
+            console.error("Fel vid uppladdning av bild", error)
+          );
+
+        closeLargeInfoCard();
+      };
+      reader.readAsDataURL(imageFile);
+    } else {
+      alert("Vänligen välj en bild.");
+    }
+  });
 
   inputCard.style.display = "block";
 }
