@@ -227,7 +227,6 @@ function addNewOlympia(newOlympia) {
       }
       return response.json();
     })
-    .then((response) => response.json())
     .then((data) => {
       console.log("Ny Olympia har lagts till i MrOlympias", data);
     })
