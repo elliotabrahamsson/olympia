@@ -196,7 +196,7 @@ function addNewOlympiaInput() {
     const formData = new FormData();
     formData.append("picture", imageFile);
 
-    fetch("https://json-server-7x9n.onrender.com/uploadImage", {
+    fetch("https://json-server-7x9n.onrender.com:10000/uploadImage", {
       method: "POST",
       body: formData,
     })
