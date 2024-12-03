@@ -209,7 +209,7 @@ function addNewOlympiaInput() {
 }
 
 function addNewOlympia(newOlympia) {
-  fetch("http://localhost:3000/MrOlympias", {
+  fetch("https://json-server-7x9n.onrender.com/MrOlympias", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -226,7 +226,7 @@ function addNewOlympia(newOlympia) {
 }
 
 function deleteOlympia(id, cardElement) {
-  fetch(`http://localhost:3000/MrOlympias/${id}`, {
+  fetch(`https://json-server-7x9n.onrender.com/MrOlympias${id}`, {
     method: "DELETE",
   })
     .then((response) => {
