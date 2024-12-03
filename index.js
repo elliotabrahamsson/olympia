@@ -233,7 +233,7 @@ function addNewOlympia(newOlympia) {
     return;
   }
 
-  fetch("https://json-server-7x9n.onrender.com/MrOlympias", {
+  fetch("https://json-server-7x9n.onrender.com/uploadImage", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
