@@ -200,7 +200,10 @@ function addNewOlympiaInput() {
       method: "POST",
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        return response.json();
+      })
       .then((data) => {
         console.log("Bild uppladdad", data.imageURL);
 
