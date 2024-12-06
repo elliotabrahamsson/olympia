@@ -1,4 +1,4 @@
-fetch("http://localhost:10000/")
+fetch("http://localhost:10000/MrOlympias")
   .then((response) => {
     if (!response.ok) {
       throw new Error("Kunde inte hämta från data.json" + response.statusText);
