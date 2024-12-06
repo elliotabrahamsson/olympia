@@ -154,7 +154,7 @@ function addNewOlympiaInput() {
   inputCard.innerHTML = `
     <div class="largeInfoCard-content">
       <span class="close" onclick="closeLargeInfoCard()"> &times</span>
-      <form id="addOlympiaForm" class="form-stacked">
+      <form id="addOlympiaForm" class="form-stacked" enctype="multipart/form-data">
         <div class="form-group">     
           <label for="name">Namn:</label>
           <input type="text" id="name" name="name" required>
@@ -183,62 +183,55 @@ function addNewOlympiaInput() {
       </form>
     </div>`;
 
-  document
-    .getElementById("addOlympiaForm")
-    .addEventListener("submit", function () {
-      const fileInput = document.querySelector("#picture");
-      const imageFile = fileInput.files[0];
+  document.getElementById("addOlympiaForm").addEventListener("submit", (e) => {
+    e.preventDefault();
 
-      if (!imageFile) {
-        alert("Vänligen välj en bild.");
-        return;
-      }
+    const form = document.getElementById("addOlympiaForm");
+    const formData = new FormData(form);
+    fetch("https://json-server-7x9n.onrender.com:10000/uploadImage", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Misslyckades att ladda upp bild");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Bild uppladdad:", data.imageURL);
 
-      const reader = new FileReader();
-      reader.onloadend = function () {
-        const base64Image = reader.result; // Base64-strängen för bilden
-
-        // Skapa ett objekt som vi kan skicka till servern
-        const olympiaData = {
-          name: document.querySelector("#name").value,
-          age: document.querySelector("#age").value,
-          nationality: document.querySelector("#nationality").value,
-          division: document.querySelector("#division").value,
-          wins: document.querySelector("#wins").value,
-          picture: base64Image, // Skicka Base64-strängen istället för en vanlig fil
+        const newOlympia = {
+          name: form.elements["name"].value,
+          age: parseInt(form.elements["age"].value, 10),
+          nationality: form.elements["nationality"].value,
+          division: form.elements["division"].value,
+          wins: parseInt(form.elements["wins"].value, 10),
+          picture: data.imageURL,
         };
 
-        // Skicka Base64-strängen till servern
-        fetch("https://json-server-7x9n.onrender.com/uploadImage", {
-          // Ändra till rätt URL om du kör servern på annan plats
+        return fetch("https://json-server-7x9n.onrender.com/MrOlympias", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(olympiaData), // Skicka data som JSON
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Bild uppladdad", data.imageUrl); // Visa URL:en från servern
-
-            // Lägg till Olympia i listan (lägg till din egen logik för att visa Olympia)
-            addNewOlympia({
-              name: olympiaData.name,
-              age: olympiaData.age,
-              nationality: olympiaData.nationality,
-              division: olympiaData.division,
-              wins: olympiaData.wins,
-              picture: data.imageUrl, // Använd URL som servern skickar tillbaka
-            });
-            closeLargeInfoCard(); // Stäng formuläret
-          })
-          .catch((error) => {
-            console.error("Fel vid uppladdning av bild", error);
-          });
-      };
-
-      reader.readAsDataURL(imageFile); // Läs filen som Base64
-    });
+          body: JSON.stringify(newOlympia),
+        });
+      })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Misslyckades att lägga till Olympia");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("Ny Olympia har lagts till i MrOlympias:", data);
+        closeLargeInfoCard();
+      })
+      .catch((error) => {
+        console.error("Fel vid uppladdning eller tillägg av Olympia:", error);
+      });
+  });
 
   inputCard.style.display = "block";
 }
