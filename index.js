@@ -186,7 +186,7 @@ function addNewOlympiaInput() {
   document.getElementById("addOlympiaForm").addEventListener("submit", (e) => {
     e.preventDefault();
 
-    const form = document.getElementById("addOlympiaForm");
+    const form = document.getElementById("picture");
     const formData = new FormData(form);
     fetch("https://json-server-7x9n.onrender.com:10000/uploadImage", {
       method: "POST",
